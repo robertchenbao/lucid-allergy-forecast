@@ -64,23 +64,16 @@ function WeatherInfoCard(props) {
     const title = props.title;
     const value = props.value;
     return (
-        <Card className="w-1/3 mx-12 my-8">
-            <CardContent>
+        <Card className="mx-12 my-8 h-128">
+            <CardContent className="flex content-between flex-col">
+                <Typography variant="body1">{title}</Typography>
                 <Typography variant="h3" component="div">
-                    {title}
-                </Typography>
-                <Typography sx={{ mb: 1.5 }} color="text.secondary">
-                    adjective
+                    {value}
                 </Typography>
                 <Typography variant="body2">
-                    well meaning and kindly.
-                    <br />
-                    {'"a benevolent smile"'}
+                    Today's pollen level is low!
                 </Typography>
             </CardContent>
-            <CardActions>
-                <Button size="small">Learn More</Button>
-            </CardActions>
         </Card>
     );
 }
@@ -175,79 +168,92 @@ export default function PrimarySearchAppBar() {
     );
 
     return (
-        <Box sx={{ flexGrow: 1 }}>
-            <AppBar position="static">
-                <Toolbar>
-                    <IconButton
-                        size="large"
-                        edge="start"
-                        color="inherit"
-                        aria-label="open drawer"
-                        sx={{ mr: 2 }}
-                    >
-                        <MenuIcon />
-                    </IconButton>
-                    <Typography
-                        variant="h6"
-                        noWrap
-                        component="div"
-                        sx={{ display: { xs: "none", sm: "block" } }}
-                    >
-                        Lucid Allergy Forcast
-                    </Typography>
-                    <Search>
-                        <SearchIconWrapper>
-                            <SearchIcon />
-                        </SearchIconWrapper>
-                        <StyledInputBase
-                            placeholder="Search for a city here..."
-                            inputProps={{ "aria-label": "search" }}
-                        />
-                    </Search>
-                    <Box sx={{ flexGrow: 1 }} />
-                    <Box sx={{ display: { xs: "none", md: "flex" } }}>
+        <div>
+            <Box className="flex-grow">
+                <AppBar position="static">
+                    <Toolbar>
                         <IconButton
                             size="large"
-                            aria-label="show 17 new notifications"
+                            edge="start"
                             color="inherit"
+                            aria-label="open drawer"
+                            sx={{ mr: 2 }}
                         >
-                            <Badge badgeContent={17} color="error">
-                                <NotificationsIcon />
-                            </Badge>
+                            <MenuIcon />
                         </IconButton>
-                        <IconButton
-                            size="large"
-                            edge="end"
-                            aria-label="account of current user"
-                            aria-controls={menuId}
-                            aria-haspopup="true"
-                            onClick={handleProfileMenuOpen}
-                            color="inherit"
+                        <Typography
+                            variant="h6"
+                            noWrap
+                            component="div"
+                            sx={{ display: { xs: "none", sm: "block" } }}
                         >
-                            <AccountCircle />
-                        </IconButton>
-                    </Box>
-                    <Box sx={{ display: { xs: "flex", md: "none" } }}>
-                        <IconButton
-                            size="large"
-                            aria-label="show more"
-                            aria-controls={mobileMenuId}
-                            aria-haspopup="true"
-                            onClick={handleMobileMenuOpen}
-                            color="inherit"
-                        >
-                            <MoreIcon />
-                        </IconButton>
-                    </Box>
-                </Toolbar>
-            </AppBar>
+                            Lucid Allergy Forcast
+                        </Typography>
+                        <Search>
+                            <SearchIconWrapper>
+                                <SearchIcon />
+                            </SearchIconWrapper>
+                            <StyledInputBase
+                                placeholder="Search for a city here..."
+                                inputProps={{ "aria-label": "search" }}
+                            />
+                        </Search>
+                        <Box sx={{ flexGrow: 1 }} />
+                        <Box sx={{ display: { xs: "none", md: "flex" } }}>
+                            <IconButton
+                                size="large"
+                                aria-label="show 17 new notifications"
+                                color="inherit"
+                            >
+                                <Badge badgeContent={17} color="error">
+                                    <NotificationsIcon />
+                                </Badge>
+                            </IconButton>
+                            <IconButton
+                                size="large"
+                                edge="end"
+                                aria-label="account of current user"
+                                aria-controls={menuId}
+                                aria-haspopup="true"
+                                onClick={handleProfileMenuOpen}
+                                color="inherit"
+                            >
+                                <AccountCircle />
+                            </IconButton>
+                        </Box>
+                        <Box sx={{ display: { xs: "flex", md: "none" } }}>
+                            <IconButton
+                                size="large"
+                                aria-label="show more"
+                                aria-controls={mobileMenuId}
+                                aria-haspopup="true"
+                                onClick={handleMobileMenuOpen}
+                                color="inherit"
+                            >
+                                <MoreIcon />
+                            </IconButton>
+                        </Box>
+                    </Toolbar>
+                </AppBar>
+            </Box>
             {renderMobileMenu}
             {renderMenu}
-            <div className="flex flex-row ">
-                <WeatherInfoCard title={"air quality"} value={"GOOD"} />
-                <WeatherInfoCard title={"air quality"} value={"GOOD"} />
-                <WeatherInfoCard title={"air quality"} value={"GOOD"} />
+
+            <div className="w-1/2 h-128">
+                <Typography
+                    variant="h3"
+                    component="div"
+                    className="text-center py-12"
+                >
+                    A Good day!
+                </Typography>
+
+                <div>
+                    <WeatherInfoCard title={"Air Quality"} value={"Good"} />
+                    <WeatherInfoCard title={"Pollen Levels"} value={"Low"} />
+                    <WeatherInfoCard title={"UV Index"} value={"Moderate"} />
+                </div>
             </div>
-        </Box>
+        </div>
     );
 }
