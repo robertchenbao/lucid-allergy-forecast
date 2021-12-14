@@ -8,6 +8,8 @@ django = "*"
 accuweather = "*"
 requests = "*"
 python-decouple = "*"
+djangorestframework = "*"
+django-cors-headers = "*"
 
 [dev-packages]
 yapf = "*"
