@@ -1,4 +1,4 @@
-import * as React from "react";
+import React, { useEffect, useState } from "react";
 import { styled, alpha } from "@mui/material/styles";
 import AppBar from "@mui/material/AppBar";
 import Box from "@mui/material/Box";
@@ -19,6 +19,7 @@ import Card from "@mui/material/Card";
 import CardActions from "@mui/material/CardActions";
 import CardContent from "@mui/material/CardContent";
 import Button from "@mui/material/Button";
+import { useForm } from "react-hook-form";
 
 const Search = styled("div")(({ theme }) => ({
     position: "relative",
@@ -77,13 +78,20 @@ function WeatherInfoCard(props) {
         </Card>
     );
 }
-export default function PrimarySearchAppBar() {
-    const [anchorEl, setAnchorEl] = React.useState(null);
-    const [mobileMoreAnchorEl, setMobileMoreAnchorEl] = React.useState(null);
+export default function WeatherApp() {
+    const [anchorEl, setAnchorEl] = useState(null);
+    const [mobileMoreAnchorEl, setMobileMoreAnchorEl] = useState(null);
+
+    // the incoming data, from weather API
+    const [weatherData, setWeatherData] = useState(null);
+
+    // the name of the city -- from user search input
+    const [cityName, setCityName] = useState("");
 
     const isMenuOpen = Boolean(anchorEl);
     const isMobileMenuOpen = Boolean(mobileMoreAnchorEl);
 
+    // open the profile menu
     const handleProfileMenuOpen = (event) => {
         setAnchorEl(event.currentTarget);
     };
@@ -122,6 +130,8 @@ export default function PrimarySearchAppBar() {
             <MenuItem onClick={handleMenuClose}>My account</MenuItem>
         </Menu>
     );
+
+    // Function for fetching data from forecasts api using location data from another endpoint
 
     const mobileMenuId = "primary-search-account-menu-mobile";
     const renderMobileMenu = (
@@ -167,6 +177,83 @@ export default function PrimarySearchAppBar() {
         </Menu>
     );
 
+    // display the results
+    function displayContent() {
+        if (!weatherData) {
+            return (
+                <div className="flex flex-col justify-center items-center">
+                    <div className="w-2/3 m-48">
+                        <h3 className="text-center">
+                            Please select options from the menu above or the
+                            category sidebar to find goods
+                        </h3>
+                    </div>
+                </div>
+            );
+        } else {
+            return (
+                <div className="w-1/2 h-128">
+                    <Typography
+                        variant="h3"
+                        component="div"
+                        className="text-center py-12"
+                    >
+                        A Good day!
+                    </Typography>
+
+                    <div>
+                        <WeatherInfoCard
+                            title={"Air Quality"}
+                            value={
+                                weatherData["DailyForecasts"][0]
+                                    .AirAndPollen[0]["Category"]
+                            }
+                        />
+                        <WeatherInfoCard
+                            title={"Pollen Levels"}
+                            value={
+                                weatherData["DailyForecasts"][0]
+                                    .AirAndPollen[1]["Category"]
+                            }
+                        />
+                        <WeatherInfoCard
+                            title={"UV Index"}
+                            value={
+                                weatherData["DailyForecasts"][0]
+                                    .AirAndPollen[5]["Category"]
+                            }
+                        />
+                    </div>
+                </div>
+            );
+        }
+    }
+
+    // submit the search form
+    function handleSearchSubmit(event) {
+        const forecastUrl = `http://localhost:8000/api/weather/${cityName}`;
+        fetch(forecastUrl, {
+            // posts the form to users/me/items. You need to login to be able to send this
+            method: "GET",
+            headers: {
+                "Content-Type": "application/json",
+            },
+        })
+            .then((response) => response.json())
+            .then((data) => {
+                let weatherInfo = JSON.parse(data["data"]["_content"]);
+                setWeatherData(weatherInfo);
+                console.log("weatherInfo::");
+                console.log(weatherInfo);
+            });
+        event.preventDefault();
+    }
+
+    // handle search value change -- update the current state if needed
+    function handleSearchChange(event) {
+        setCityName(event.target.value);
+    }
+
     return (
         <div>
             <Box className="flex-grow">
@@ -187,16 +274,21 @@ export default function PrimarySearchAppBar() {
                             component="div"
                             sx={{ display: { xs: "none", sm: "block" } }}
                         >
-                            Lucid Allergy Forcast
+                            Lucid Allergy Forecast
                         </Typography>
                         <Search>
                             <SearchIconWrapper>
                                 <SearchIcon />
                             </SearchIconWrapper>
-                            <StyledInputBase
-                                placeholder="Search for a city here..."
-                                inputProps={{ "aria-label": "search" }}
-                            />
+                            <form onSubmit={handleSearchSubmit}>
+                                <StyledInputBase
+                                    placeholder="Search for a city here..."
+                                    inputProps={{ "aria-label": "search" }}
+                                    type="text"
+                                    value={cityName}
+                                    onChange={handleSearchChange}
+                                />
+                            </form>
                         </Search>
                         <Box sx={{ flexGrow: 1 }} />
                         <Box sx={{ display: { xs: "none", md: "flex" } }}>
@@ -238,22 +330,7 @@ export default function PrimarySearchAppBar() {
             </Box>
             {renderMobileMenu}
             {renderMenu}
-
-            <div className="w-1/2 h-128">
-                <Typography
-                    variant="h3"
-                    component="div"
-                    className="text-center py-12"
-                >
-                    A Good day!
-                </Typography>
-
-                <div>
-                    <WeatherInfoCard title={"Air Quality"} value={"Good"} />
-                    <WeatherInfoCard title={"Pollen Levels"} value={"Low"} />
-                    <WeatherInfoCard title={"UV Index"} value={"Moderate"} />
-                </div>
-            </div>
+            {displayContent()}
         </div>
     );
 }
