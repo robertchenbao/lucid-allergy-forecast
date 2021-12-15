@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import { styled, alpha } from "@mui/material/styles";
 import AppBar from "@mui/material/AppBar";
 import Box from "@mui/material/Box";
@@ -12,14 +12,12 @@ import Menu from "@mui/material/Menu";
 import MenuIcon from "@mui/icons-material/Menu";
 import SearchIcon from "@mui/icons-material/Search";
 import AccountCircle from "@mui/icons-material/AccountCircle";
-import MailIcon from "@mui/icons-material/Mail";
 import NotificationsIcon from "@mui/icons-material/Notifications";
 import MoreIcon from "@mui/icons-material/MoreVert";
 import Card from "@mui/material/Card";
-import CardActions from "@mui/material/CardActions";
 import CardContent from "@mui/material/CardContent";
+import ForcastChart from "./ForcastChart";
 import Button from "@mui/material/Button";
-import { useForm } from "react-hook-form";
 
 const Search = styled("div")(({ theme }) => ({
     position: "relative",
@@ -61,6 +59,10 @@ const StyledInputBase = styled(InputBase)(({ theme }) => ({
     },
 }));
 
+// the reducer to add up an array
+const addAQReducer = (previousValue, currentValue) =>
+    previousValue["CategoryValue"] + currentValue["CategoryValue"];
+
 function WeatherInfoCard(props) {
     const title = props.title;
     const value = props.value;
@@ -68,7 +70,7 @@ function WeatherInfoCard(props) {
         <Card className="mx-12 my-8 h-128">
             <CardContent className="flex content-between flex-col">
                 <Typography variant="body1">{title}</Typography>
-                <Typography variant="h3" component="div">
+                <Typography variant="h4" component="div">
                     {value}
                 </Typography>
                 <Typography variant="body2">
@@ -78,12 +80,15 @@ function WeatherInfoCard(props) {
         </Card>
     );
 }
+
 export default function WeatherApp() {
     const [anchorEl, setAnchorEl] = useState(null);
     const [mobileMoreAnchorEl, setMobileMoreAnchorEl] = useState(null);
 
     // the incoming data, from weather API
     const [weatherData, setWeatherData] = useState(null);
+    const [pollenAvg, setPollenAvg] = useState(0);
+    const [pollenTotal, setPollenTotal] = useState(0);
 
     // the name of the city -- from user search input
     const [cityName, setCityName] = useState("");
@@ -192,39 +197,82 @@ export default function WeatherApp() {
             );
         } else {
             return (
-                <div className="w-1/2 h-128">
-                    <Typography
-                        variant="h3"
-                        component="div"
-                        className="text-center py-12"
-                    >
-                        A Good day!
-                    </Typography>
+                <div className="flex flex-row items-center px-6">
+                    <div className="w-1/2 h-128">
+                        <Typography
+                            variant="h5"
+                            component="div"
+                            className="text-center pt-16 px-12"
+                        >
+                            {airQualityMessage}
+                        </Typography>
 
-                    <div>
-                        <WeatherInfoCard
-                            title={"Air Quality"}
-                            value={
-                                weatherData["DailyForecasts"][0]
-                                    .AirAndPollen[0]["Category"]
-                            }
-                        />
-                        <WeatherInfoCard
-                            title={"Pollen Levels"}
-                            value={
-                                weatherData["DailyForecasts"][0]
-                                    .AirAndPollen[1]["Category"]
-                            }
-                        />
-                        <WeatherInfoCard
-                            title={"UV Index"}
-                            value={
-                                weatherData["DailyForecasts"][0]
-                                    .AirAndPollen[5]["Category"]
-                            }
-                        />
+                        <div>
+                            <WeatherInfoCard
+                                title={"Air Quality"}
+                                value={
+                                    weatherData["DailyForecasts"][0]
+                                        .AirAndPollen[0]["Category"]
+                                }
+                            />
+                            <WeatherInfoCard
+                                title={"Pollen Levels"}
+                                value={
+                                    weatherData["DailyForecasts"][0]
+                                        .AirAndPollen[1]["Category"]
+                                }
+                            />
+                            <WeatherInfoCard
+                                title={"UV Index"}
+                                value={
+                                    weatherData["DailyForecasts"][0]
+                                        .AirAndPollen[5]["Category"]
+                                }
+                            />
+                        </div>
+                    </div>
+                    <div className="w-1/2 h-128">
+                        <ForcastChart />
+                        <Typography
+                            variant="h5"
+                            component="div"
+                            className="text-center px-12"
+                        >
+                            5-Day Allergy Forcast in{" "}
+                            {cityName.replace(/./, (c) => c.toUpperCase())}
+                        </Typography>
                     </div>
                 </div>
+            );
+        }
+    }
+
+    const [airQualityMessage, setAirQualityMessage] = useState("");
+
+    function generateAirQualityMessage(pollenIndex) {
+        if (pollenIndex <= 3) {
+            setAirQualityMessage(
+                "Today's a great day. Go out and enjoy the fresh air!"
+            );
+        } else if (pollenIndex <= 6) {
+            setAirQualityMessage(
+                "Today's a decent day. Enjoy the outdoors but take precautions if you're sensitive."
+            );
+        } else if (pollenIndex <= 9) {
+            setAirQualityMessage(
+                "Today's a meh day. You might need to take some allergy medicine if you plan to be outside."
+            );
+        } else if (pollenIndex <= 12) {
+            setAirQualityMessage(
+                "Today might be a bad day to go outside. Take some medicine and try to stay indoors if you can."
+            );
+        } else if (pollenIndex <= 15) {
+            setAirQualityMessage(
+                "Today's an extremely bad day for pollen. Taek some medicine and stay indoors as much as possible."
+            );
+        } else if (pollenIndex <= 18) {
+            setAirQualityMessage(
+                "Uh oh! If you're reading this, it's too late. It's raining pollen. Head in to your bunker and stay put until further advisory if you want to live."
             );
         }
     }
@@ -243,6 +291,21 @@ export default function WeatherApp() {
             .then((data) => {
                 let weatherInfo = JSON.parse(data["data"]["_content"]);
                 setWeatherData(weatherInfo);
+
+                let pollenData =
+                    weatherInfo["DailyForecasts"][0]["AirAndPollen"];
+
+                let pollenAverage = 0;
+                let pollenSum = 0;
+                for (var i = 1; i < pollenData.length; i++) {
+                    if (i != 2) {
+                        pollenSum += pollenData[i].CategoryValue;
+                    }
+                    pollenAverage = Math.round(pollenSum / 4);
+                }
+                setPollenAvg(pollenAverage);
+                setPollenTotal(pollenSum);
+                generateAirQualityMessage(pollenSum);
                 console.log("weatherInfo::");
                 console.log(weatherInfo);
             });
