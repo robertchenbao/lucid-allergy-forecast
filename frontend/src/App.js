@@ -74,7 +74,7 @@ function WeatherInfoCard(props) {
                     {value}
                 </Typography>
                 <Typography variant="body2">
-                    Today's pollen level is low!
+                    Today's {title.toLowerCase()} is {value.toLowerCase()}.
                 </Typography>
             </CardContent>
         </Card>
@@ -87,8 +87,6 @@ export default function WeatherApp() {
 
     // the incoming data, from weather API
     const [weatherData, setWeatherData] = useState(null);
-    const [pollenAvg, setPollenAvg] = useState(0);
-    const [pollenTotal, setPollenTotal] = useState(0);
 
     // the name of the city -- from user search input
     const [cityName, setCityName] = useState("");
@@ -217,10 +215,7 @@ export default function WeatherApp() {
                             />
                             <WeatherInfoCard
                                 title={"Pollen Levels"}
-                                value={
-                                    weatherData["DailyForecasts"][0]
-                                        .AirAndPollen[1]["Category"]
-                                }
+                                value={pollenMessage}
                             />
                             <WeatherInfoCard
                                 title={"UV Index"}
@@ -247,33 +242,41 @@ export default function WeatherApp() {
         }
     }
 
+    const [pollenMessage, setPollenMessage] = useState("");
     const [airQualityMessage, setAirQualityMessage] = useState("");
 
+    // generate air quality message from a total pollen index
     function generateAirQualityMessage(pollenIndex) {
         if (pollenIndex <= 3) {
             setAirQualityMessage(
-                "Today's a great day. Go out and enjoy the fresh air!"
+                "Great day. Safe to go out, and enjoy some fresh air!"
             );
+            setPollenMessage("Low");
         } else if (pollenIndex <= 6) {
             setAirQualityMessage(
-                "Today's a decent day. Enjoy the outdoors but take precautions if you're sensitive."
+                "It's a decent day. Enjoy the outdoors, though beware if you're sensitive."
             );
+            setPollenMessage("Low");
         } else if (pollenIndex <= 9) {
             setAirQualityMessage(
-                "Today's a meh day. You might need to take some allergy medicine if you plan to be outside."
+                "Moderate weather. If you plan to be outside, we suggest to take allergy medications."
             );
+            setPollenMessage("Moderate");
         } else if (pollenIndex <= 12) {
             setAirQualityMessage(
-                "Today might be a bad day to go outside. Take some medicine and try to stay indoors if you can."
+                "High risk for allergy. Stay indoors if possible."
             );
+            setPollenMessage("High");
         } else if (pollenIndex <= 15) {
             setAirQualityMessage(
-                "Today's an extremely bad day for pollen. Taek some medicine and stay indoors as much as possible."
+                "Extremely high risk for allergy. Avoid all outdoor activities is advised."
             );
+            setPollenMessage("Extreme");
         } else if (pollenIndex <= 18) {
             setAirQualityMessage(
-                "Uh oh! If you're reading this, it's too late. It's raining pollen. Head in to your bunker and stay put until further advisory if you want to live."
+                "Extremely high risk for allergy. Avoid all outdoor activities is advised."
             );
+            setPollenMessage("Extreme");
         }
     }
 
@@ -303,8 +306,6 @@ export default function WeatherApp() {
                     }
                     pollenAverage = Math.round(pollenSum / 4);
                 }
-                setPollenAvg(pollenAverage);
-                setPollenTotal(pollenSum);
                 generateAirQualityMessage(pollenSum);
                 console.log("weatherInfo::");
                 console.log(weatherInfo);
