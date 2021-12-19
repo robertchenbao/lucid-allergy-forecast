@@ -12,5 +12,4 @@ urlpatterns = [
          views.WeatherView.as_view(),
          name='weather info'),
     path('admin/', admin.site.urls),
-    #    url(r'^api/', include(router.urls)),
 ]
