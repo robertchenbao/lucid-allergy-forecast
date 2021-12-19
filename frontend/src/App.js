@@ -59,10 +59,10 @@ const StyledInputBase = styled(InputBase)(({ theme }) => ({
     },
 }));
 
-// the reducer to add up an array
-const addAQReducer = (previousValue, currentValue) =>
-    previousValue["CategoryValue"] + currentValue["CategoryValue"];
-
+/*
+Display the weather info (e.g., UV index, pollen, etc) 
+in Cards, on the dashboard
+*/
 function WeatherInfoCard(props) {
     const title = props.title;
     const value = props.value;
@@ -89,7 +89,29 @@ export default function WeatherApp() {
     const [weatherData, setWeatherData] = useState(null);
 
     // the name of the city -- from user search input
+    const [cityInput, setCityInput] = useState("");
+
     const [cityName, setCityName] = useState("");
+    const [stateName, setStateName] = useState("");
+
+    // the message for air quality, and pollen
+    const [pollenLabel, setPollenLabel] = useState("");
+    const [airQualityMessage, setAirQualityMessage] = useState("");
+
+    // forcast data
+    let forcastDates = [];
+    let forcastDataSeries = [];
+    if (weatherData) {
+        forcastDates = weatherData["DailyForecasts"].map((item) => {
+            return item["Date"];
+        });
+        forcastDataSeries = weatherData["DailyForecasts"].map((item) => {
+            return item["AirAndPollen"]["CategoryValue"];
+        });
+        console.log(forcastDates);
+        console.log(forcastDataSeries);
+    }
+    // const forcastDataSeries =
 
     const isMenuOpen = Boolean(anchorEl);
     const isMobileMenuOpen = Boolean(mobileMoreAnchorEl);
@@ -180,23 +202,23 @@ export default function WeatherApp() {
         </Menu>
     );
 
-    // display the results
+    // display the results on frontend
     function displayContent() {
         if (!weatherData) {
             return (
                 <div className="flex flex-col justify-center items-center">
                     <div className="w-2/3 m-48">
-                        <h3 className="text-center">
-                            Please select options from the menu above or the
-                            category sidebar to find goods
-                        </h3>
+                        <h1 className="text-center text-xl">
+                            To see an allergy forcast, please search for a city
+                            from the menu above
+                        </h1>
                     </div>
                 </div>
             );
         } else {
             return (
                 <div className="flex flex-row items-center px-6">
-                    <div className="w-1/2 h-128">
+                    <div className="w-2/5 h-128">
                         <Typography
                             variant="h5"
                             component="div"
@@ -215,7 +237,7 @@ export default function WeatherApp() {
                             />
                             <WeatherInfoCard
                                 title={"Pollen Levels"}
-                                value={pollenMessage}
+                                value={pollenLabel}
                             />
                             <WeatherInfoCard
                                 title={"UV Index"}
@@ -226,15 +248,14 @@ export default function WeatherApp() {
                             />
                         </div>
                     </div>
-                    <div className="w-1/2 h-128">
+                    <div className="w-3/5 h-128">
                         <ForcastChart />
                         <Typography
                             variant="h5"
                             component="div"
                             className="text-center px-12"
                         >
-                            5-Day Allergy Forcast in{" "}
-                            {cityName.replace(/./, (c) => c.toUpperCase())}
+                            5-Day Allergy Forcast in {cityName}, {stateName}
                         </Typography>
                     </div>
                 </div>
@@ -242,47 +263,44 @@ export default function WeatherApp() {
         }
     }
 
-    const [pollenMessage, setPollenMessage] = useState("");
-    const [airQualityMessage, setAirQualityMessage] = useState("");
-
     // generate air quality message from a total pollen index
     function generateAirQualityMessage(pollenIndex) {
         if (pollenIndex <= 3) {
             setAirQualityMessage(
                 "Great day. Safe to go out, and enjoy some fresh air!"
             );
-            setPollenMessage("Low");
+            setPollenLabel("Low");
         } else if (pollenIndex <= 6) {
             setAirQualityMessage(
                 "It's a decent day. Enjoy the outdoors, though beware if you're sensitive."
             );
-            setPollenMessage("Low");
+            setPollenLabel("Low");
         } else if (pollenIndex <= 9) {
             setAirQualityMessage(
-                "Moderate weather. If you plan to be outside, we suggest to take allergy medications."
+                "Moderate risk for allergy. If needed, bring meds/a mask if going outside."
             );
-            setPollenMessage("Moderate");
+            setPollenLabel("Moderate");
         } else if (pollenIndex <= 12) {
             setAirQualityMessage(
                 "High risk for allergy. Stay indoors if possible."
             );
-            setPollenMessage("High");
+            setPollenLabel("High");
         } else if (pollenIndex <= 15) {
             setAirQualityMessage(
-                "Extremely high risk for allergy. Avoid all outdoor activities is advised."
+                "Extremely high risk for allergy. Try to avoid all outdoor activities."
             );
-            setPollenMessage("Extreme");
+            setPollenLabel("Extreme");
         } else if (pollenIndex <= 18) {
             setAirQualityMessage(
                 "Extremely high risk for allergy. Avoid all outdoor activities is advised."
             );
-            setPollenMessage("Extreme");
+            setPollenLabel("Extreme");
         }
     }
 
     // submit the search form
     function handleSearchSubmit(event) {
-        const forecastUrl = `http://localhost:8000/api/weather/${cityName}`;
+        const forecastUrl = `http://localhost:8000/api/weather/${cityInput}`;
         fetch(forecastUrl, {
             // posts the form to users/me/items. You need to login to be able to send this
             method: "GET",
@@ -294,6 +312,8 @@ export default function WeatherApp() {
             .then((data) => {
                 let weatherInfo = JSON.parse(data["data"]["_content"]);
                 setWeatherData(weatherInfo);
+                setCityName(data["EnglishName"]);
+                setStateName(data["AdministrativeArea"]);
 
                 let pollenData =
                     weatherInfo["DailyForecasts"][0]["AirAndPollen"];
@@ -315,7 +335,7 @@ export default function WeatherApp() {
 
     // handle search value change -- update the current state if needed
     function handleSearchChange(event) {
-        setCityName(event.target.value);
+        setCityInput(event.target.value);
     }
 
     return (
@@ -349,7 +369,7 @@ export default function WeatherApp() {
                                     placeholder="Search for a city here..."
                                     inputProps={{ "aria-label": "search" }}
                                     type="text"
-                                    value={cityName}
+                                    value={cityInput}
                                     onChange={handleSearchChange}
                                 />
                             </form>
