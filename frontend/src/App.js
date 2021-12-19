@@ -131,8 +131,8 @@ export default function WeatherApp() {
 
     const getDayFormat = (dateString) => {
         let options = { weekday: "long" };
-        let dayNumber = new Date(dateString).getDay();
-        return new Intl.DateTimeFormat("en-US", options).format(dayNumber);
+        let date = new Date(dateString);
+        return new Intl.DateTimeFormat("en-US", options).format(date);
     };
     let forcastDataValue = [];
     if (weatherData) {
@@ -318,32 +318,32 @@ export default function WeatherApp() {
 
     // generate air quality message from a total pollen index
     function generateAirQualityMessage(pollenIndex) {
-        if (pollenIndex <= 3) {
+        if (pollenIndex <= 0.75) {
             setAirQualityMessage(
                 "Great day. Safe to go out, and enjoy some fresh air!"
             );
             setPollenLabel("Low");
-        } else if (pollenIndex <= 6) {
+        } else if (pollenIndex <= 1.5) {
             setAirQualityMessage(
                 "It's a decent day. Enjoy the outdoors, though beware if you're sensitive."
             );
             setPollenLabel("Low");
-        } else if (pollenIndex <= 9) {
+        } else if (pollenIndex <= 2.25) {
             setAirQualityMessage(
                 "Moderate risk for allergy. If needed, bring meds/a mask if going outside."
             );
             setPollenLabel("Moderate");
-        } else if (pollenIndex <= 12) {
+        } else if (pollenIndex <= 3) {
             setAirQualityMessage(
                 "High risk for allergy. Stay indoors if possible."
             );
             setPollenLabel("High");
-        } else if (pollenIndex <= 15) {
+        } else if (pollenIndex <= 3.75) {
             setAirQualityMessage(
                 "Extremely high risk for allergy. Try to avoid all outdoor activities."
             );
             setPollenLabel("Extreme");
-        } else if (pollenIndex <= 18) {
+        } else if (pollenIndex <= 4.5) {
             setAirQualityMessage(
                 "Extremely high risk for allergy. Avoid all outdoor activities is advised."
             );
