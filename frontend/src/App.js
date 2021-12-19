@@ -17,7 +17,6 @@ import MoreIcon from "@mui/icons-material/MoreVert";
 import Card from "@mui/material/Card";
 import CardContent from "@mui/material/CardContent";
 import ForcastChart from "./ForcastChart";
-import Button from "@mui/material/Button";
 
 const Search = styled("div")(({ theme }) => ({
     position: "relative",
@@ -54,7 +53,7 @@ const StyledInputBase = styled(InputBase)(({ theme }) => ({
         transition: theme.transitions.create("width"),
         width: "100%",
         [theme.breakpoints.up("md")]: {
-            width: "20ch",
+            width: "30ch",
         },
     },
 }));
@@ -66,6 +65,7 @@ in Cards, on the dashboard
 function WeatherInfoCard(props) {
     const title = props.title;
     const value = props.value;
+    const index = props.index;
     return (
         <Card className="mx-12 my-8 h-128">
             <CardContent className="flex content-between flex-col">
@@ -74,7 +74,8 @@ function WeatherInfoCard(props) {
                     {value}
                 </Typography>
                 <Typography variant="body2">
-                    Today's {title.toLowerCase()} is {value.toLowerCase()}.
+                    Today's {title.toLowerCase()} is {value.toLowerCase()}, with
+                    an index of {index}.
                 </Typography>
             </CardContent>
         </Card>
@@ -95,23 +96,63 @@ export default function WeatherApp() {
     const [stateName, setStateName] = useState("");
 
     // the message for air quality, and pollen
+    const [pollenAverage, setPollenAverage] = useState(0);
     const [pollenLabel, setPollenLabel] = useState("");
     const [airQualityMessage, setAirQualityMessage] = useState("");
 
     // forcast data
     let forcastDates = [];
-    let forcastDataSeries = [];
+    let forcastDataSeries = [
+        {
+            name: "AirQuality",
+            data: [],
+        },
+        {
+            name: "Grass",
+            data: [],
+        },
+        {
+            name: "Mold",
+            data: [],
+        },
+        {
+            name: "Ragweed",
+            data: [],
+        },
+        {
+            name: "Tree",
+            data: [],
+        },
+        {
+            name: "UVIndex",
+            data: [],
+        },
+    ];
+
+    const getDayFormat = (dateString) => {
+        let options = { weekday: "long" };
+        let dayNumber = new Date(dateString).getDay();
+        return new Intl.DateTimeFormat("en-US", options).format(dayNumber);
+    };
+    let forcastDataValue = [];
     if (weatherData) {
         forcastDates = weatherData["DailyForecasts"].map((item) => {
-            return item["Date"];
+            return getDayFormat(item["Date"]);
         });
-        forcastDataSeries = weatherData["DailyForecasts"].map((item) => {
-            return item["AirAndPollen"]["CategoryValue"];
+        forcastDataValue = weatherData["DailyForecasts"].map((item) => {
+            return item["AirAndPollen"].map((subItem) => {
+                return subItem["CategoryValue"];
+            });
         });
+
+        for (let i = 0; i < forcastDataValue.length; i++) {
+            forcastDataSeries[i]["data"] = forcastDataValue[i];
+        }
+
         console.log(forcastDates);
+        console.log(forcastDataValue);
         console.log(forcastDataSeries);
     }
-    // const forcastDataSeries =
 
     const isMenuOpen = Boolean(anchorEl);
     const isMobileMenuOpen = Boolean(mobileMoreAnchorEl);
@@ -234,10 +275,15 @@ export default function WeatherApp() {
                                     weatherData["DailyForecasts"][0]
                                         .AirAndPollen[0]["Category"]
                                 }
+                                index={
+                                    weatherData["DailyForecasts"][0]
+                                        .AirAndPollen[0]["Value"]
+                                }
                             />
                             <WeatherInfoCard
                                 title={"Pollen Levels"}
                                 value={pollenLabel}
+                                index={pollenAverage}
                             />
                             <WeatherInfoCard
                                 title={"UV Index"}
@@ -245,11 +291,18 @@ export default function WeatherApp() {
                                     weatherData["DailyForecasts"][0]
                                         .AirAndPollen[5]["Category"]
                                 }
+                                index={
+                                    weatherData["DailyForecasts"][0]
+                                        .AirAndPollen[5]["Value"]
+                                }
                             />
                         </div>
                     </div>
                     <div className="w-3/5 h-128">
-                        <ForcastChart />
+                        <ForcastChart
+                            forcastDataSeries={forcastDataSeries}
+                            forcastDates={forcastDates}
+                        />
                         <Typography
                             variant="h5"
                             component="div"
@@ -318,14 +371,14 @@ export default function WeatherApp() {
                 let pollenData =
                     weatherInfo["DailyForecasts"][0]["AirAndPollen"];
 
-                let pollenAverage = 0;
                 let pollenSum = 0;
-                for (var i = 1; i < pollenData.length; i++) {
-                    if (i != 2) {
+                for (let i = 1; i < pollenData.length; i++) {
+                    if (i !== 2) {
                         pollenSum += pollenData[i].CategoryValue;
                     }
-                    pollenAverage = Math.round(pollenSum / 4);
                 }
+                setPollenAverage(Math.round(pollenSum / 4));
+                console.log(pollenSum);
                 generateAirQualityMessage(pollenSum);
                 console.log("weatherInfo::");
                 console.log(weatherInfo);
