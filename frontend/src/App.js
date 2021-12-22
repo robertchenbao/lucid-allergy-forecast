@@ -6,17 +6,12 @@ import Toolbar from "@mui/material/Toolbar";
 import IconButton from "@mui/material/IconButton";
 import Typography from "@mui/material/Typography";
 import InputBase from "@mui/material/InputBase";
-import Badge from "@mui/material/Badge";
-import MenuItem from "@mui/material/MenuItem";
-import Menu from "@mui/material/Menu";
-import MenuIcon from "@mui/icons-material/Menu";
 import SearchIcon from "@mui/icons-material/Search";
-import AccountCircle from "@mui/icons-material/AccountCircle";
-import NotificationsIcon from "@mui/icons-material/Notifications";
-import MoreIcon from "@mui/icons-material/MoreVert";
 import Card from "@mui/material/Card";
 import CardContent from "@mui/material/CardContent";
 import ForcastChart from "./ForcastChart";
+import CloudOutlinedIcon from "@mui/icons-material/CloudOutlined";
+import logo from "./logo.svg"; // Tell webpack this JS file uses this image
 
 const Search = styled("div")(({ theme }) => ({
     position: "relative",
@@ -83,9 +78,6 @@ function WeatherInfoCard(props) {
 }
 
 export default function WeatherApp() {
-    const [anchorEl, setAnchorEl] = useState(null);
-    const [mobileMoreAnchorEl, setMobileMoreAnchorEl] = useState(null);
-
     // the incoming data, from weather API
     const [weatherData, setWeatherData] = useState(null);
 
@@ -154,94 +146,7 @@ export default function WeatherApp() {
         console.log(forcastDataSeries);
     }
 
-    const isMenuOpen = Boolean(anchorEl);
-    const isMobileMenuOpen = Boolean(mobileMoreAnchorEl);
-
-    // open the profile menu
-    const handleProfileMenuOpen = (event) => {
-        setAnchorEl(event.currentTarget);
-    };
-
-    const handleMobileMenuClose = () => {
-        setMobileMoreAnchorEl(null);
-    };
-
-    const handleMenuClose = () => {
-        setAnchorEl(null);
-        handleMobileMenuClose();
-    };
-
-    const handleMobileMenuOpen = (event) => {
-        setMobileMoreAnchorEl(event.currentTarget);
-    };
-
-    const menuId = "primary-search-account-menu";
-    const renderMenu = (
-        <Menu
-            anchorEl={anchorEl}
-            anchorOrigin={{
-                vertical: "top",
-                horizontal: "right",
-            }}
-            id={menuId}
-            keepMounted
-            transformOrigin={{
-                vertical: "top",
-                horizontal: "right",
-            }}
-            open={isMenuOpen}
-            onClose={handleMenuClose}
-        >
-            <MenuItem onClick={handleMenuClose}>Profile</MenuItem>
-            <MenuItem onClick={handleMenuClose}>My account</MenuItem>
-        </Menu>
-    );
-
     // Function for fetching data from forecasts api using location data from another endpoint
-
-    const mobileMenuId = "primary-search-account-menu-mobile";
-    const renderMobileMenu = (
-        <Menu
-            anchorEl={mobileMoreAnchorEl}
-            anchorOrigin={{
-                vertical: "top",
-                horizontal: "right",
-            }}
-            id={mobileMenuId}
-            keepMounted
-            transformOrigin={{
-                vertical: "top",
-                horizontal: "right",
-            }}
-            open={isMobileMenuOpen}
-            onClose={handleMobileMenuClose}
-        >
-            <MenuItem>
-                <IconButton
-                    size="large"
-                    aria-label="show 17 new notifications"
-                    color="inherit"
-                >
-                    <Badge badgeContent={17} color="error">
-                        <NotificationsIcon />
-                    </Badge>
-                </IconButton>
-                <p>Notifications</p>
-            </MenuItem>
-            <MenuItem onClick={handleProfileMenuOpen}>
-                <IconButton
-                    size="large"
-                    aria-label="account of current user"
-                    aria-controls="primary-search-account-menu"
-                    aria-haspopup="true"
-                    color="inherit"
-                >
-                    <AccountCircle />
-                </IconButton>
-                <p>Profile</p>
-            </MenuItem>
-        </Menu>
-    );
 
     // display the results on frontend
     function displayContent() {
@@ -251,7 +156,7 @@ export default function WeatherApp() {
                     <div className="w-2/3 m-48">
                         <h1 className="text-center text-xl">
                             To see an allergy forcast, please search for a city
-                            from the menu above
+                            from the menu above.
                         </h1>
                     </div>
                 </div>
@@ -318,32 +223,32 @@ export default function WeatherApp() {
 
     // generate air quality message from a total pollen index
     function generateAirQualityMessage(pollenIndex) {
-        if (pollenIndex <= 0.75) {
+        if (pollenIndex <= 2) {
             setAirQualityMessage(
                 "Great day. Safe to go out, and enjoy some fresh air!"
             );
             setPollenLabel("Low");
-        } else if (pollenIndex <= 1.5) {
+        } else if (pollenIndex <= 4) {
             setAirQualityMessage(
                 "It's a decent day. Enjoy the outdoors, though beware if you're sensitive."
             );
             setPollenLabel("Low");
-        } else if (pollenIndex <= 2.25) {
+        } else if (pollenIndex <= 5) {
             setAirQualityMessage(
                 "Moderate risk for allergy. If needed, bring meds/a mask if going outside."
             );
             setPollenLabel("Moderate");
-        } else if (pollenIndex <= 3) {
+        } else if (pollenIndex <= 7) {
             setAirQualityMessage(
                 "High risk for allergy. Stay indoors if possible."
             );
             setPollenLabel("High");
-        } else if (pollenIndex <= 3.75) {
+        } else if (pollenIndex <= 9) {
             setAirQualityMessage(
                 "Extremely high risk for allergy. Try to avoid all outdoor activities."
             );
             setPollenLabel("Extreme");
-        } else if (pollenIndex <= 4.5) {
+        } else {
             setAirQualityMessage(
                 "Extremely high risk for allergy. Avoid all outdoor activities is advised."
             );
@@ -396,15 +301,16 @@ export default function WeatherApp() {
             <Box className="flex-grow">
                 <AppBar position="static">
                     <Toolbar>
-                        <IconButton
+                        {/* <IconButton
                             size="large"
                             edge="start"
                             color="inherit"
                             aria-label="open drawer"
                             sx={{ mr: 2 }}
                         >
-                            <MenuIcon />
-                        </IconButton>
+                            <CloudOutlinedIcon />
+                        </IconButton> */}
+                        <img src={logo} width="50px" className="mr-4" />
                         <Typography
                             variant="h6"
                             noWrap
@@ -428,45 +334,9 @@ export default function WeatherApp() {
                             </form>
                         </Search>
                         <Box sx={{ flexGrow: 1 }} />
-                        <Box sx={{ display: { xs: "none", md: "flex" } }}>
-                            <IconButton
-                                size="large"
-                                aria-label="show 17 new notifications"
-                                color="inherit"
-                            >
-                                <Badge badgeContent={17} color="error">
-                                    <NotificationsIcon />
-                                </Badge>
-                            </IconButton>
-                            <IconButton
-                                size="large"
-                                edge="end"
-                                aria-label="account of current user"
-                                aria-controls={menuId}
-                                aria-haspopup="true"
-                                onClick={handleProfileMenuOpen}
-                                color="inherit"
-                            >
-                                <AccountCircle />
-                            </IconButton>
-                        </Box>
-                        <Box sx={{ display: { xs: "flex", md: "none" } }}>
-                            <IconButton
-                                size="large"
-                                aria-label="show more"
-                                aria-controls={mobileMenuId}
-                                aria-haspopup="true"
-                                onClick={handleMobileMenuOpen}
-                                color="inherit"
-                            >
-                                <MoreIcon />
-                            </IconButton>
-                        </Box>
                     </Toolbar>
                 </AppBar>
             </Box>
-            {renderMobileMenu}
-            {renderMenu}
             {displayContent()}
         </div>
     );
