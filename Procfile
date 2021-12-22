@@ -1,1 +1,3 @@
-web: gunicorn -b 0.0.0.0:8000 backend.asgi --log-file -
+web: gunicorn backend.wsgi:application --log-file - --log-level debug
+python manage.py collectstatic --noinput
+manage.py migrate
