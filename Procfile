@@ -1,2 +1,1 @@
-web: gunicorn backend.wsgi
-
+web: gunicorn -b 0.0.0.0:8000 backend.asgi --log-file -
