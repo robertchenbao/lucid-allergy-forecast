@@ -1,4 +1,4 @@
-from django.urls import include, path
+from django.urls import include, path, re_path
 from django.contrib import admin
 from rest_framework import routers
 from . import views
@@ -12,4 +12,6 @@ urlpatterns = [
          views.WeatherView.as_view(),
          name='weather info'),
     path('admin/', admin.site.urls),
+    # have it as the last urlpattern for BrowserHistory urls to work
+    re_path(r'^', views.FrontendAppView.as_view()),
 ]
