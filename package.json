@@ -1,13 +1,17 @@
 {
   "name": "lucid-air-quality",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "main": "index.js",
   "repository": "",
   "author": "Robert Bao",
   "license": "MIT",
   "private": true,
   "scripts": {
-    "heroku-prebuild": "NODE_ENV=production cd frontend/ && npm install && npm run build && cd .."
+    "start": "react-scripts start",
+    "build": "react-scripts build",
+    "test": "react-scripts test",
+    "eject": "react-scripts eject",
+    "postinstall": "npm run build"
   },
   "cacheDirectories": [
     "frontend/node_modules"
