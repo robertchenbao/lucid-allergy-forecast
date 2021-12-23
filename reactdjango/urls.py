@@ -21,7 +21,7 @@ from api import views
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('api/', include('reactdjango.urls')),
-    # re_path('.*', views.FrontendAppView.as_view()),
+    path('api/', include('api.urls')),
     re_path('.*', TemplateView.as_view(template_name='index.html'))
+    # re_path('.*', views.FrontendAppView.as_view()),
 ]

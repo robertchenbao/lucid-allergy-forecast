@@ -53,6 +53,8 @@ class WeatherView(APIView):
             location_url = base_location_url + API_KEY + "&q={}".format(
                 city_name)
             location_data = requests.get(location_url).json()
+            # print("location_data::")
+            # print(location_data)
             if len(location_data) == 0:
                 # TODO: handle "city not found" problem here
                 pass

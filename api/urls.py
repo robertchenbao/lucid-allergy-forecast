@@ -7,9 +7,8 @@ from . import views
 # router.register(r'weather', views.WeatherViewSet, basename="weather")
 
 urlpatterns = [
-    path('', views.index, name='index'),
-    path('weather/<str:city_name>',
+    path('weather/', views.index, name='index'),
+    path('weather/<str:city_name>/',
          views.WeatherView.as_view(),
-         name='weather info'),
-    path('admin/', admin.site.urls)
+         name='weather info')
 ]
