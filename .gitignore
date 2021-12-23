@@ -4,9 +4,6 @@ __pycache__/
 *$py.class
 *.pyc
 
-# django project
-settings.py
-
 # C extensions
 *.so
 
