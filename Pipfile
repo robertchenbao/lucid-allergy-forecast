@@ -12,6 +12,7 @@ djangorestframework = "*"
 django-cors-headers = "*"
 whitenoise = "*"
 gunicorn = "*"
+django-heroku = "*"
 
 [dev-packages]
 yapf = "*"

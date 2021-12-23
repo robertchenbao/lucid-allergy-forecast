@@ -11,7 +11,5 @@ urlpatterns = [
     path('weather/<str:city_name>',
          views.WeatherView.as_view(),
          name='weather info'),
-    path('admin/', admin.site.urls),
-    # have it as the last urlpattern for BrowserHistory urls to work
-    re_path(r'^', views.FrontendAppView.as_view()),
+    path('admin/', admin.site.urls)
 ]

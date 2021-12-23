@@ -11,5 +11,6 @@
   },
   "cacheDirectories": [
     "frontend/node_modules"
-  ]
+  ],
+  "homepage": "."
 }

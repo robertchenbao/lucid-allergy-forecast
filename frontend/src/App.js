@@ -258,7 +258,7 @@ export default function WeatherApp() {
 
     // submit the search form
     function handleSearchSubmit(event) {
-        const forecastUrl = `http://localhost:8000/api/weather/${cityInput}`;
+        const forecastUrl = `${process.env.rooturl}/api/weather/${cityInput}`;
         fetch(forecastUrl, {
             // posts the form to users/me/items. You need to login to be able to send this
             method: "GET",
