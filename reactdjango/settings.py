@@ -128,6 +128,8 @@ STATICFILES_DIRS = [
     os.path.join(BASE_DIR, 'build'),
 ]
 
+ALLOWED_HOSTS = ['lucid-air.herokuapp.com', '127.0.0.1:8000']
+
 REACT_APP_DIR = os.path.join(BASE_DIR, 'frontend')
 
 STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
