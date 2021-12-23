@@ -8,7 +8,7 @@
   "private": true,
   "scripts": {
     "start": "craco start",
-    "build": "craco build",
+    "build": "npm run build",
     "test": "craco test",
     "eject": "react-scripts eject",
     "postinstall": "npm run build"
