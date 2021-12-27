@@ -1,8 +1,15 @@
 module.exports = {
-    content: ["./public/index.html", "./src/**/*.{js,jsx,ts,tsx}"],
+    content: [
+        "./public/index.html",
+        "./src/**/*.{js,jsx,ts,tsx}",
+        "./src/*.{js,jsx,ts,tsx}",
+    ],
     theme: {
         extend: {},
     },
-    plugins: [],
-    purge: ["./templates/**/*.html"],
+    plugins: {
+        tailwindcss: {},
+        autoprefixer: {},
+        ...(NODE_ENV === "production" ? { cssnano: {} } : {}),
+    },
 };
