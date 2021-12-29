@@ -2,7 +2,9 @@
 
 **An air quality forecast app for allergic people.**
 
-Live demo: https://lucid-air.herokuapp.com/
+<img src="https://user-images.githubusercontent.com/30555057/147699972-f9405fca-4fe2-4961-b19f-2f14ee3b4907.png" alt="lucid-air-screenshot"/>
+
+Live: https://lucid-air.herokuapp.com/
 
 ## Inspiration
 
