@@ -10,7 +10,7 @@ Live: https://lucid-air.herokuapp.com/
 
 Many people around the world have seasonal allergies. For them, going out on days with high levels of UV index, or pollen level, could be very uncomfortable. The issue could be alleviated by interventions like face masks and medications. However, this would work only if people know the allergens are present beforehand. 
 
-Personally, I have had allergies to pollens and mold for years. So, I wanted to use web technologies to build something that could help people with allergies, providing them with timely information about potential allergy risks.
+Personally, I have had allergies to pollens and dust for years. So, I wanted to use web technologies to build something that could help people with allergies, providing them with timely information about potential allergy risks.
 
 ## What it does
 
@@ -18,7 +18,7 @@ I've built a web app that provides and visualizes allergy risks for any given ci
 
 ## How I built it
 
-- I used React and Material-UI to power the frontend web application and Python (Django) to run our backend server. 
+- I used React and Material-UI to power the frontend web application and Python (Django) to run the backend server. 
 - On the backend, I used an API from Accuweather to generate the allergen level data. 
 
 ## Challenges I ran into
